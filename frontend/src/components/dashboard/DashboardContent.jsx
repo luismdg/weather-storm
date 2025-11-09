@@ -4,6 +4,33 @@ import { MapPin, Wind, AlertTriangle, Loader, ChevronLeft, ChevronRight, Tornado
 const API_BASE_URL = "http://localhost:8000"
 
 // ============================================
+//  mostrar JSON
+// ============================================
+function InfoPopup({ isOpen, onClose, title, children }) {
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onClick={onClose}>
+      <div 
+        className="bg-[#024b58] text-[#EAF6F6] rounded-xl p-6 w-[90%] max-w-lg shadow-xl relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="text-xl font-bold mb-3">{title}</h2>
+        <pre className="text-xs bg-black/30 p-3 rounded-lg overflow-auto max-h-[60vh] text-[#B2D8D8] whitespace-pre-wrap">
+          {children}
+        </pre>
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-cyan-300 hover:text-cyan-100 text-xl font-bold w-8 h-8 flex items-center justify-center"
+        >
+          ✖
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
 // Componente de Carrusel de Imágenes
 // ============================================
 function ImageCarousel({ images, title }) {
@@ -22,7 +49,7 @@ function ImageCarousel({ images, title }) {
 
   useEffect(() => {
     setImageLoading(true)
-  }, [currentIndex])
+  }, [currentIndex, images])
 
   if (!images || images.length === 0) {
     return (
@@ -35,9 +62,7 @@ function ImageCarousel({ images, title }) {
 
   return (
     <div className="relative">
-      {/* Imagen actual */}
       <div className="relative bg-[#013f4e] rounded-lg overflow-hidden min-h-[250px] md:min-h-[400px] flex items-center justify-center">
-
         {imageLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-[#013f4e] z-10">
             <Loader className="w-8 h-8 text-cyan-400 animate-spin" />
@@ -55,7 +80,6 @@ function ImageCarousel({ images, title }) {
           }}
         />
 
-        {/* Botones de navegación */}
         {images.length > 1 && (
           <>
             <button
@@ -76,7 +100,6 @@ function ImageCarousel({ images, title }) {
           </>
         )}
 
-        {/* Indicador de posición */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 px-4 py-2 rounded-full z-20">
           <span className="text-white text-sm font-medium">
             {currentIndex + 1} / {images.length}
@@ -84,7 +107,6 @@ function ImageCarousel({ images, title }) {
         </div>
       </div>
 
-      {/* Miniaturas */}
       {images.length > 1 && images.length <= 10 && (
         <div className="flex gap-2 mt-4 overflow-x-auto pb-2 justify-center">
           {images.map((img, idx) => (
@@ -111,7 +133,6 @@ function ImageCarousel({ images, title }) {
         </div>
       )}
 
-      {/* Lista de puntos para más de 10 imágenes */}
       {images.length > 10 && (
         <div className="flex gap-2 mt-4 overflow-x-auto pb-2 justify-center">
           {images.map((_, idx) => (
@@ -136,7 +157,7 @@ function ImageCarousel({ images, title }) {
 }
 
 // ============================================
-// Componente para cargar imágenes generales
+// Carrusel General (PARA HISTÓRICO)
 // ============================================
 function GeneralMapCarousel({ latestDate }) {
   const [images, setImages] = useState([])
@@ -150,6 +171,7 @@ function GeneralMapCarousel({ latestDate }) {
       try {
         setLoading(true)
         setError(null)
+        setImages([])
         
         console.log(`Cargando mapas generales para fecha: ${latestDate}`)
         
@@ -201,103 +223,7 @@ function GeneralMapCarousel({ latestDate }) {
 }
 
 // ============================================
-// Componente para mostrar la ÚLTIMA imagen general
-// ============================================
-function LatestGeneralImage({ latestDate }) {
-  const [imageUrl, setImageUrl] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [imageLoading, setImageLoading] = useState(true)
-
-  useEffect(() => {
-    if (!latestDate) return
-
-    const loadLatest = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-
-        const listResponse = await fetch(`${API_BASE_URL}/api/date/${latestDate}/maps/general/list`)
-        if (!listResponse.ok) throw new Error('No se pudieron cargar las imágenes generales')
-
-        const listData = await listResponse.json()
-        if (!listData.images || listData.images.length === 0) {
-          setError('No hay imágenes generales disponibles')
-          setImageUrl(null)
-          return
-        }
-
-        // Seleccionar la imagen con el índice más alto (última)
-        const latestImage = listData.images.reduce((a, b) => {
-          const ai = Number(a.index)
-          const bi = Number(b.index)
-          return ai >= bi ? a : b
-        })
-
-        const url = `${API_BASE_URL}/api/date/${latestDate}/maps/general/${latestImage.index}?v=${latestDate}`
-        setImageUrl(url)
-      } catch (err) {
-        console.error('Error cargando la última imagen general:', err)
-        setError(err.message || 'Error cargando la imagen')
-      } finally {
-        setLoading(false)
-        setImageLoading(true)
-      }
-    }
-
-    loadLatest()
-  }, [latestDate])
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader className="w-12 h-12 text-cyan-400 animate-spin" />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-8">
-        <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-2" />
-        <p className="text-red-400">{error}</p>
-      </div>
-    )
-  }
-
-  if (!imageUrl) {
-    return (
-      <div className="text-center py-8">
-        <MapPin className="w-12 h-12 text-slate-500 mx-auto mb-2 opacity-30" />
-        <p className="text-[#B2D8D8]">No hay imagen disponible</p>
-      </div>
-    )
-  }
-
-  return (
-    <div className="relative bg-[#013f4e] rounded-lg overflow-hidden min-h-[400px] flex items-center justify-center">
-      {imageLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#013f4e] z-10">
-          <Loader className="w-8 h-8 text-cyan-400 animate-spin" />
-        </div>
-      )}
-
-      <img
-        src={imageUrl}
-        alt={`Mapa General - Última`}
-        className="w-full h-auto max-h-[600px] object-contain"
-        onLoad={() => setImageLoading(false)}
-        onError={(e) => {
-          console.error('Error cargando la última imagen general:', imageUrl)
-          setImageLoading(false)
-        }}
-      />
-    </div>
-  )
-}
-
-// ============================================
-// Componente para cargar imágenes de tormenta específica
+// Carrusel de Tormenta (HÍBRIDO: Histórico Y Última Lectura)
 // ============================================
 function StormMapCarousel({ stormId, latestDate }) {
   const [images, setImages] = useState([])
@@ -305,33 +231,48 @@ function StormMapCarousel({ stormId, latestDate }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    if (!stormId || !latestDate) return
+    if (!stormId) return
 
     const loadStormMaps = async () => {
       try {
         setLoading(true)
         setError(null)
+        setImages([])
         
-        console.log(`Cargando mapas para tormenta: ${stormId}, fecha: ${latestDate}`)
-        
-        const listResponse = await fetch(`${API_BASE_URL}/api/date/${latestDate}/maps/${stormId}/list`)
-        
-        if (!listResponse.ok) {
-          throw new Error(`No se pudieron cargar las imágenes de ${stormId}`)
+        if (latestDate) {
+          console.log(`📅 HISTÓRICO: Cargando mapas para tormenta: ${stormId}, fecha: ${latestDate}`)
+          
+          const listResponse = await fetch(`${API_BASE_URL}/api/date/${latestDate}/maps/${stormId}/list`)
+          
+          if (!listResponse.ok) {
+            throw new Error(`No se pudieron cargar las imágenes de ${stormId}`)
+          }
+          
+          const listData = await listResponse.json()
+          console.log(`Lista de mapas para ${stormId}:`, listData)
+          
+          const imageUrls = listData.images.map(img => 
+            `${API_BASE_URL}/api/date/${latestDate}/maps/${stormId}/${img.index}?v=${latestDate}`
+          )
+          
+          console.log(`✅ ${imageUrls.length} imágenes de ${stormId} cargadas`)
+          setImages(imageUrls)
+        } else {
+          console.log(`🕐 ÚLTIMA LECTURA: Cargando última imagen para tormenta: ${stormId}`)
+          
+          const checkResponse = await fetch(`${API_BASE_URL}/api/maps/${stormId}`, { cache: 'no-store' })
+          
+          if (!checkResponse.ok) {
+            throw new Error(`No se encontró mapa para ${stormId}`)
+          }
+          
+          const imageUrl = `${API_BASE_URL}/api/maps/${stormId}?v=${Date.now()}`
+          console.log(`✅ 1 imagen de ${stormId} cargada (última lectura)`)
+          setImages([imageUrl])
         }
         
-        const listData = await listResponse.json()
-        console.log(`Lista de mapas para ${stormId}:, listData`)
-        
-        const imageUrls = listData.images.map(img => 
-          `${API_BASE_URL}/api/date/${latestDate}/maps/${stormId}/${img.index}?v=${latestDate}`
-        )
-        
-        console.log(`${imageUrls.length} imágenes de ${stormId} cargadas`)
-        setImages(imageUrls)
-        
       } catch (err) {
-        console.error(`Error cargando mapas de ${stormId}:, err`)
+        console.error(`Error cargando mapas de ${stormId}:`, err)
         setError(err.message)
       } finally {
         setLoading(false)
@@ -361,267 +302,8 @@ function StormMapCarousel({ stormId, latestDate }) {
   return <ImageCarousel images={images} title={`Tormenta ${stormId}`} />
 }
 
-function InfoPopup({ isOpen, onClose, title, children }) {
-  if (!isOpen) return null
-
-  return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-[#024b58] text-[#EAF6F6] rounded-xl p-6 w-[90%] max-w-lg shadow-xl relative">
-        <h2 className="text-xl font-bold mb-3">{title}</h2>
-        <pre className="text-xs bg-black/30 p-3 rounded-lg overflow-auto max-h-[60vh] text-[#B2D8D8] whitespace-pre-wrap">
-          {children}
-        </pre>
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-cyan-300 hover:text-cyan-100"
-        >
-          ✖
-        </button>
-      </div>
-    </div>
-  )
-}
-
-
-export default function DashboardContent({ mainStormView, setMainStormView, activeStorms, loading, error, latestDate }) {
-  const [showInfo, setShowInfo] = useState(false)
-  const [selectedJSON, setSelectedJSON] = useState(null)  
-  
-  const getDangerLevelColor = (category) => {
-    if (category >= 4) return "bg-red-500"
-    if (category >= 2) return "bg-yellow-500"
-    return "bg-green-500"
-  }
-
-  // Muestra el spinner si está cargando
-  if (loading) {
-    return (
-      <section className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#013f4e] flex items-center justify-center">
-        <div className="text-center">
-          <Loader className="w-12 h-12 text-cyan-400 animate-spin mx-auto mb-4" />
-          <p className="text-[#B2D8D8]">Cargando datos de tormentas...</p>
-        </div>
-      </section>
-    )
-  }
-
-  // Muestra un error si la API falló 
-  
-  if (error) {
-    return (
-      <section className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#013f4e] flex items-center justify-center">
-        <div className="text-center">
-          <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <p className="text-red-400 mb-2">Error al cargar datos</p>
-          <p className="text-[#B2D8D8] text-sm">{error}</p>
-        </div>
-      </section>
-    )
-  }
-
-  if (!latestDate) {
-    return (
-      <section className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#013f4e]">
-        <div className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#EAF6F6] mb-2 drop-shadow-lg">Vista General de Tormentas</h1>
-          <p className="text-[#B2D8D8] text-sm">Ultimo mapa general disponible</p>
-        </div>
-
-        <div className="bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border border-white/10 overflow-hidden p-4">
-          <LatestAvailableGeneral />
-        </div>
-      </section>
-    )
-  }
-
- 
-
-  return (
-   <section className="flex-1 flex flex-col overflow-y-auto hide-scrollbar p-6 md:p-8 bg-[#013f4e]">
-
-
-      <div className="mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-[#EAF6F6] mb-2 drop-shadow-lg">
-          {mainStormView ? mainStormView.nombre || mainStormView.name : "Vista General de Tormentas"}
-        </h1>
-        <p className="text-[#B2D8D8] text-sm">
-          {mainStormView 
-            ? `${mainStormView.ubicacion || mainStormView.location || 'Sin ubicación'}`
-            : "Monitoreo en tiempo real de tormentas tropicales"}
-        </p>
-        {latestDate && (
-          <p className="text-[#B2D8D8] text-xs mt-1">
-            Datos para la fecha: {latestDate}
-          </p>
-        )}
-      </div>
-
-      {/* Storm Cards */}
-      {activeStorms.length === 0 ? (
-        // --- VISTA DE "NO HAY TORMENTAS" ---
-        // (Esto se activa si la API devuelve un array vacío para esa fecha)
-        <div className="bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border border-white/10 p-12 text-center">
-          <Wind className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-30" />
-          <h3 className="text-xl font-bold text-[#EAF6F6] mb-2">No hay tormentas activas</h3>
-          <p className="text-[#B2D8D8]">No se detectan tormentas tropicales para la fecha seleccionada.</p>
-        </div>
-      ) : (
-        // --- VISTA DE "SI HAY TORMENTAS" ---
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <button
-              onClick={() => setMainStormView(null)}
-              className={`bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border transition-all duration-300 overflow-hidden text-left group hover:scale-[1.02] ${
-                !mainStormView
-                  ? "border-cyan-400/40 shadow-lg shadow-cyan-400/25"
-                  : "border-white/10 hover:border-cyan-400/30 shadow-lg hover:shadow-cyan-400/15"
-              }`}
-            >
-              <div className="h-1 bg-gradient-to-r from-green-500/50 to-emerald-500/50" />
-              <div className="relative aspect-[4/3] flex items-center justify-center">
-                <Tornado className="w-12 h-12 text-cyan-400 opacity-50" />
-              </div>
-              <div className="p-3">
-                <h3 className="text-sm font-bold text-[#EAF6F6] group-hover:text-cyan-300 transition-colors">
-                  Vista General
-                </h3>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedJSON({type: 'general', latestDate })
-                    setShowInfo(true)
-                  }}
-                  className="mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 px-2 py-1 rounded-lg text-xs transition-all"
-                  >
-                    JSON
-                  </button>
-              </div>
-            </button>
-
-            {activeStorms.map((storm) => {
-              const isSelected = mainStormView?.id === storm.id
-              const category = storm.categoria || storm.category || 1
-              const dangerColor = getDangerLevelColor(category)
-
-              return (
-                <button
-                  key={storm.id}
-                  onClick={() => setMainStormView(storm)}
-                  className={`bg-[#024b58]/80 rounded-[14px] border transition-all duration-300 overflow-hidden text-left group hover:scale-[1.02] ${
-                    isSelected
-                      ? "border-cyan-400/40 shadow-lg shadow-cyan-400/25"
-                      : "border-white/10 hover:border-cyan-400/30 shadow-lg hover:shadow-cyan-400/15"
-                  }`}
-                >
-                  <div className={`h-1 ${dangerColor}`} />
-                  <div className="relative aspect-[4/3] flex items-center justify-center bg-[#013f4e]">
-                    {storm.imageUrl ? (
-                      <img 
-                        src={storm.imageUrl} 
-                        alt={storm.nombre || storm.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy" 
-                        onError={(e) => {
-                          e.target.style.display = 'none'
-                          e.target.nextSibling.style.display = 'flex'
-                        }}
-                      />
-                    ) : null}
-                    <div className={storm.imageUrl ? "hidden" : "flex"} style={{position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center'}}>
-                      <Wind className="w-12 h-12 text-cyan-400 opacity-40" />
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-sm font-bold text-[#EAF6F6] group-hover:text-cyan-300 transition-colors">
-                      {storm.nombre || storm.name || `Tormenta ${storm.id}`}
-                    </h3>
-                    <p className="text-xs text-[#B2D8D8] mt-1">
-                      Categoría {category}
-                    </p>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSelectedJSON(storm)
-                        setShowInfo(true)
-                      }}
-                      className="mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 px-2 py-1 rounded-lg text-xs transition-all"
-                    >
-                      JSON
-                    </button>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-
-          {/* CARRUSEL - Se muestra SIEMPRE */}
-          <div className="bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border border-white/10 overflow-hidden">
-            <div className="p-4 border-b border-white/10">
-              
-              {/* --- Lógica para tormentas sin imagen individual (97L) --- */}
-              <h2 className="text-xl font-bold text-[#EAF6F6]">
-                {
-                  !mainStormView 
-                    ? "Mapas Generales de Tormentas"
-                  : mainStormView.invest 
-                    ? `Área de Investigación: ${mainStormView.nombre || mainStormView.name}`
-                    : `Mapas de ${mainStormView.nombre || mainStormView.name}`
-                }
-              </h2>
-
-              <p className="text-sm text-[#B2D8D8] mt-1">
-                {mainStormView 
-                  ? `ID: ${mainStormView.id}` 
-                  : `Todas las actualizaciones del ${latestDate || 'día seleccionado'}`}
-              </p>
-            </div>
-
-            <div className="p-4">
-              {
-                !mainStormView ? (
-                  // (Vista General) - al cargar la página mostramos la última imagen general
-                  <LatestGeneralImage latestDate={latestDate} />
-                ) 
-                
-                : mainStormView.invest ? (
-                 
-                  <div className="text-center py-8">
-                    <Wind className="w-12 h-12 text-slate-500 mx-auto mb-2 opacity-30" />
-                    <h3 className="text-lg font-bold text-[#EAF6F6]">Investigación Activa</h3>
-                    <p className="text-[#B2D8D8]">
-                      No hay mapas de pronóstico individuales para esta área de investigación.
-                    </p>
-                  </div>
-                ) 
-                
-                : (
-                 
-                  <StormMapCarousel 
-                    stormId={mainStormView.id} 
-                    latestDate={latestDate}
-                  />
-                )
-              }
-            </div>
-          </div>
-        </>
-      )}
-      <InfoPopup
-      isOpen={showInfo}
-      onClose={() => setShowInfo(false)}
-      title="Datos JSON"
-    >
-      {selectedJSON
-      ? JSON.stringify(selectedJSON, null, 2)
-      : "No hay datos disponibles."}
-      </InfoPopup>
-    </section>
-  )
-}
-
 // ============================================
-// Componente para mostrar el último mapa general
-// cuando NO hay latestDate seleccionado
+// Última Imagen General Disponible
 // ============================================
 function LatestAvailableGeneral() {
   const [loading, setLoading] = useState(true)
@@ -635,13 +317,13 @@ function LatestAvailableGeneral() {
       try {
         setLoading(true)
         setError(null)
+        setImageLoading(true)
 
         const resp = await fetch(`${API_BASE_URL}/api/maps`, { cache: 'no-store' })
         if (!resp.ok) {
           throw new Error('No se encontró el mapa general más reciente')
         }
 
-        // Usamos la misma ruta para el <img>, añadimos un query param para evitar cache
         if (isMounted) setImageUrl(`${API_BASE_URL}/api/maps?v=${Date.now()}`)
       } catch (err) {
         console.error('Error obteniendo el último mapa general:', err)
@@ -683,7 +365,6 @@ function LatestAvailableGeneral() {
 
   return (
     <div className="relative bg-[#013f4e] rounded-lg overflow-hidden min-h-[250px] md:min-h-[400px] flex items-center justify-center">
-
       {imageLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#013f4e] z-10">
           <Loader className="w-8 h-8 text-cyan-400 animate-spin" />
@@ -701,5 +382,399 @@ function LatestAvailableGeneral() {
         }}
       />
     </div>
+  )
+}
+
+// ============================================
+// DashboardContent Principal
+// ============================================
+export default function DashboardContent({ mainStormView, setMainStormView, activeStorms, loading, error, latestDate }) {
+  const [showInfo, setShowInfo] = useState(false)
+  const [selectedJSON, setSelectedJSON] = useState(null)
+  
+  const getDangerLevelColor = (category) => {
+    if (category >= 4) return "bg-red-500"
+    if (category >= 2) return "bg-yellow-500"
+    return "bg-green-500"
+  }
+
+  if (loading) {
+    return (
+      <section className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#013f4e] flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 text-cyan-400 animate-spin mx-auto mb-4" />
+          <p className="text-[#B2D8D8]">Cargando datos de tormentas...</p>
+        </div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#013f4e] flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+          <p className="text-red-400 mb-2">Error al cargar datos</p>
+          <p className="text-[#B2D8D8] text-sm">{error}</p>
+        </div>
+      </section>
+    )
+  }
+
+  // VISTA #1: ÚLTIMA LECTURA (sin fecha seleccionada)
+  if (!latestDate) {
+    return (
+      <section className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#013f4e]">
+        <div className="mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#EAF6F6] mb-2 drop-shadow-lg">
+            {mainStormView ? mainStormView.nombre || mainStormView.name : "Última Lectura General"}
+          </h1>
+          <p className="text-[#B2D8D8] text-sm">
+            {mainStormView ? `ID: ${mainStormView.id}` : "Mostrando el mapa general y tormentas más recientes."}
+          </p>
+        </div>
+
+        {activeStorms.length === 0 ? (
+          <div>
+            <div className="bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border border-white/10 p-12 text-center mb-6">
+              <Wind className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-30" />
+              <h3 className="text-xl font-bold text-[#EAF6F6] mb-2">No hay tormentas activas</h3>
+              <p className="text-[#B2D8D8]">No se detectan tormentas tropicales en la última lectura.</p>
+            </div>
+            
+            <div className="bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border border-white/10 overflow-hidden">
+              <div className="p-4 border-b border-white/10">
+                <h2 className="text-xl font-bold text-[#EAF6F6]">Mapa General</h2>
+                <p className="text-sm text-[#B2D8D8]">Último mapa general disponible</p>
+              </div>
+              <div className="p-4">
+                <LatestAvailableGeneral />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <button
+                onClick={() => setMainStormView(null)}
+                className={`bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border transition-all duration-300 overflow-hidden text-left group hover:scale-[1.02] ${
+                  !mainStormView
+                    ? "border-cyan-400/40 shadow-lg shadow-cyan-400/25"
+                    : "border-white/10 hover:border-cyan-400/30 shadow-lg hover:shadow-cyan-400/15"
+                }`}
+              >
+                <div className="h-1 bg-gradient-to-r from-green-500/50 to-emerald-500/50" />
+                <div className="relative aspect-[4/3] flex items-center justify-center">
+                  <Tornado className="w-12 h-12 text-cyan-400 opacity-50" />
+                </div>
+                <div className="p-3">
+                  <h3 className="text-sm font-bold text-[#EAF6F6] group-hover:text-cyan-300 transition-colors">
+                    Vista General
+                  </h3>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      // VALORES HARDCODED PARA FRONTEND (Vista General - Última)
+                      setSelectedJSON({ 
+                        view: "GENERAL_LATEST",
+                        note: "DATOS HARDCODED PARA FRONTEND",
+                        status: "waiting_backend_implementation"
+                      })
+                      setShowInfo(true)
+                    }}
+                    className="mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 px-2 py-1 rounded-lg text-xs transition-all"
+                  >
+                    JSON
+                  </button>
+                </div>
+              </button>
+
+              {activeStorms.map((storm) => {
+                const isSelected = mainStormView?.id === storm.id
+                const category = storm.categoria || storm.category || 1
+                const dangerColor = getDangerLevelColor(category)
+                return (
+                  <button
+                    key={storm.id}
+                    onClick={() => setMainStormView(storm)}
+                    className={`bg-[#024b58]/80 rounded-[14px] border transition-all duration-300 overflow-hidden text-left group hover:scale-[1.02] ${
+                      isSelected
+                        ? "border-cyan-400/40 shadow-lg shadow-cyan-400/25"
+                        : "border-white/10 hover:border-cyan-400/30 shadow-lg hover:shadow-cyan-400/15"
+                    }`}
+                  >
+                    <div className={`h-1 ${dangerColor}`} />
+                    <div className="relative aspect-[4/3] flex items-center justify-center bg-[#013f4e]">
+                      {storm.imageUrl && !storm.invest ? (
+                        <img 
+                          src={storm.imageUrl} 
+                          alt={storm.nombre || storm.name}
+                          className="w-full h-full object-cover"
+                          loading="lazy" 
+                          onError={(e) => {
+                            e.target.style.display = 'none'
+                            e.target.nextSibling.style.display = 'flex'
+                          }}
+                        />
+                      ) : null}
+                      <div className={storm.imageUrl && !storm.invest ? "hidden" : "flex"} style={{position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center'}}>
+                        <Wind className="w-12 h-12 text-cyan-400 opacity-40" />
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="text-sm font-bold text-[#EAF6F6] group-hover:text-cyan-300 transition-colors">
+                        {storm.nombre || storm.name || `Tormenta ${storm.id}`}
+                      </h3>
+                      <p className="text-xs text-[#B2D8D8] mt-1">
+                        Categoría {category}
+                      </p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          // VALORES HARDCODED PARA FRONTEND (Tormenta Específica - Última)
+                          setSelectedJSON({ 
+                            view: "SPECIFIC_STORM_LATEST",
+                            stormId: storm.id, // Mantenemos el ID real para referencia
+                            note: "DATOS HARDCODED PARA FRONTEND",
+                            status: "waiting_backend_implementation"
+                          })
+                          setShowInfo(true)
+                        }}
+                        className="mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 px-2 py-1 rounded-lg text-xs transition-all"
+                      >
+                        JSON
+                      </button>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border border-white/10 overflow-hidden">
+              <div className="p-4 border-b border-white/10">
+                <h2 className="text-xl font-bold text-[#EAF6F6]">
+                  {
+                    !mainStormView 
+                      ? "Mapa General (Última Lectura)"
+                    : mainStormView.invest
+                      ? `Área de Investigación: ${mainStormView.nombre || mainStormView.name}`
+                      : `Mapa de ${mainStormView.nombre || mainStormView.name} (Última Lectura)`
+                  }
+                </h2>
+              </div>
+
+              <div className="p-4">
+                {
+                  !mainStormView ? (
+                    <LatestAvailableGeneral />
+                  ) 
+                  : mainStormView.invest ? (
+                    <div className="text-center py-8">
+                      <Wind className="w-12 h-12 text-slate-500 mx-auto mb-2 opacity-30" />
+                      <h3 className="text-lg font-bold text-[#EAF6F6]">Investigación Activa</h3>
+                      <p className="text-[#B2D8D8]">No hay mapas individuales para esta área.</p>
+                    </div>
+                  ) 
+                  : (
+                    <StormMapCarousel 
+                      stormId={mainStormView.id} 
+                      latestDate={null}
+                    />
+                  )
+                }
+              </div>
+            </div>
+          </>
+        )}
+
+        <InfoPopup
+          isOpen={showInfo}
+          onClose={() => setShowInfo(false)}
+          title="Datos JSON (Hardcoded)"
+        >
+          {selectedJSON ? JSON.stringify(selectedJSON, null, 2) : "No hay datos disponibles."}
+        </InfoPopup>
+      </section>
+    )
+  }
+
+  // VISTA #2: HISTÓRICO (con fecha seleccionada)
+  return (
+    <section className="flex-1 overflow-y-auto hide-scrollbar p-6 md:p-8 bg-[#013f4e]">
+      <div className="mb-6">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#EAF6F6] mb-2 drop-shadow-lg">
+          {mainStormView ? mainStormView.nombre || mainStormView.name : "Vista General de Tormentas"}
+        </h1>
+        <p className="text-[#B2D8D8] text-sm">
+          {mainStormView 
+            ? `${mainStormView.ubicacion || mainStormView.location || 'Sin ubicación'}`
+            : "Monitoreo en tiempo real de tormentas tropicales"}
+        </p>
+        {latestDate && (
+          <p className="text-[#B2D8D8] text-xs mt-1">
+            Datos para la fecha: {latestDate}
+          </p>
+        )}
+      </div>
+
+      {activeStorms.length === 0 ? (
+        <div className="bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border border-white/10 p-12 text-center mb-6">
+          <Wind className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-30" />
+          <h3 className="text-xl font-bold text-[#EAF6F6] mb-2">No hay tormentas activas</h3>
+          <p className="text-[#B2D8D8]">No se detectan tormentas tropicales para la fecha seleccionada.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <button
+              onClick={() => setMainStormView(null)}
+              className={`bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border transition-all duration-300 overflow-hidden text-left group hover:scale-[1.02] ${
+                !mainStormView
+                  ? "border-cyan-400/40 shadow-lg shadow-cyan-400/25"
+                  : "border-white/10 hover:border-cyan-400/30 shadow-lg hover:shadow-cyan-400/15"
+              }`}
+            >
+              <div className="h-1 bg-gradient-to-r from-green-500/50 to-emerald-500/50" />
+              <div className="relative aspect-[4/3] flex items-center justify-center">
+                <Tornado className="w-12 h-12 text-cyan-400 opacity-50" />
+              </div>
+              <div className="p-3">
+                <h3 className="text-sm font-bold text-[#EAF6F6] group-hover:text-cyan-300 transition-colors">
+                  Vista General
+                </h3>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    // VALORES HARDCODED PARA FRONTEND (Vista General - Histórica)
+                    setSelectedJSON({ 
+                      view: "GENERAL_HISTORIC",
+                      date: latestDate,
+                      note: "DATOS HARDCODED PARA FRONTEND",
+                      status: "waiting_backend_implementation"
+                    })
+                    setShowInfo(true)
+                  }}
+                  className="mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 px-2 py-1 rounded-lg text-xs transition-all"
+                >
+                  JSON
+                </button>
+              </div>
+            </button>
+
+            {activeStorms.map((storm) => {
+              const isSelected = mainStormView?.id === storm.id
+              const category = storm.categoria || storm.category || 1
+              const dangerColor = getDangerLevelColor(category)
+
+              return (
+                <button
+                  key={storm.id}
+                  onClick={() => setMainStormView(storm)}
+                  className={`bg-[#024b58]/80 rounded-[14px] border transition-all duration-300 overflow-hidden text-left group hover:scale-[1.02] ${
+                    isSelected
+                      ? "border-cyan-400/40 shadow-lg shadow-cyan-400/25"
+                      : "border-white/10 hover:border-cyan-400/30 shadow-lg hover:shadow-cyan-400/15"
+                  }`}
+                >
+                  <div className={`h-1 ${dangerColor}`} />
+                  <div className="relative aspect-[4/3] flex items-center justify-center bg-[#013f4e]">
+                    {storm.imageUrl && !storm.invest ? (
+                      <img 
+                        src={storm.imageUrl} 
+                        alt={storm.nombre || storm.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy" 
+                        onError={(e) => {
+                          e.target.style.display = 'none'
+                          e.target.nextSibling.style.display = 'flex'
+                        }}
+                      />
+                    ) : null}
+
+                    <div className={storm.imageUrl && !storm.invest ? "hidden" : "flex"} style={{position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center'}}>
+                      <Wind className="w-12 h-12 text-cyan-400 opacity-40" />
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <h3 className="text-sm font-bold text-[#EAF6F6] group-hover:text-cyan-300 transition-colors">
+                      {storm.nombre || storm.name || `Tormenta ${storm.id}`}
+                    </h3>
+                    <p className="text-xs text-[#B2D8D8] mt-1">
+                      Categoría {category}
+                    </p>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        // VALORES HARDCODED PARA FRONTEND (Tormenta Específica - Histórica)
+                        setSelectedJSON({ 
+                          view: "SPECIFIC_STORM_HISTORIC",
+                          stormId: storm.id,
+                          date: latestDate,
+                          note: "DATOS HARDCODED PARA FRONTEND",
+                          status: "waiting_backend_implementation"
+                        })
+                        setShowInfo(true)
+                      }}
+                      className="mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 px-2 py-1 rounded-lg text-xs transition-all"
+                    >
+                      JSON
+                    </button>
+                  </div>
+                </button>
+              )
+            })}
+        </div>
+      )}
+
+      <div className="bg-[#024b58]/80 backdrop-blur-xl rounded-[14px] border border-white/10 overflow-hidden mt-6">
+        <div className="p-4 border-b border-white/10">
+          <h2 className="text-xl font-bold text-[#EAF6F6]">
+            {
+              !mainStormView 
+                ? "Mapas Generales de Tormentas"
+              : mainStormView.invest 
+                ? `Área de Investigación: ${mainStormView.nombre || mainStormView.name}`
+                : `Mapas de ${mainStormView.nombre || mainStormView.name}`
+            }
+          </h2>
+
+          <p className="text-sm text-[#B2D8D8] mt-1">
+            {mainStormView 
+              ? `ID: ${mainStormView.id}` 
+              : `Todas las actualizaciones del ${latestDate || 'día seleccionado'}`}
+          </p>
+        </div>
+
+        <div className="p-4">
+          {
+            !mainStormView ? (
+              <GeneralMapCarousel latestDate={latestDate} />
+            ) 
+            : mainStormView.invest ? (
+              <div className="text-center py-8">
+                <Wind className="w-12 h-12 text-slate-500 mx-auto mb-2 opacity-30" />
+                <h3 className="text-lg font-bold text-[#EAF6F6]">Investigación Activa</h3>
+                <p className="text-[#B2D8D8]">
+                  No hay mapas de pronóstico individuales para esta área de investigación.
+                </p>
+              </div>
+            ) 
+            : (
+              <StormMapCarousel 
+                stormId={mainStormView.id} 
+                latestDate={latestDate}
+              />
+            )
+          }
+        </div>
+      </div>
+
+      <InfoPopup
+        isOpen={showInfo}
+        onClose={() => setShowInfo(false)}
+        title="Datos JSON (Hardcoded)"
+      >
+        {selectedJSON ? JSON.stringify(selectedJSON, null, 2) : "No hay datos disponibles."}
+      </InfoPopup>
+    </section>
   )
 }

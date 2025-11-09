@@ -21,14 +21,50 @@ app.add_middleware(
 # --- Ruta base de datos generados ---
 DATA_DIR = Path("..") / ".." / ".." / "Data" / "Data"
 
+def parse_dirname_timestamp(dir_path):
+    """Extrae timestamp del nombre: 20251103_114143 -> 20251103114143"""
+    try:
+        name = dir_path.name
+        if '_' not in name or len(name) < 15:
+            return 0
+        timestamp_str = name.replace('_', '')
+        return int(timestamp_str)
+    except:
+        return 0
+
+# Al iniciar, mostrar info
+@app.on_event("startup")
+async def startup_event():
+    print("="*60)
+    print(f"DATA_DIR: {DATA_DIR.absolute()}")
+    print(f"DATA_DIR existe: {DATA_DIR.exists()}")
+    
+    if DATA_DIR.exists():
+        dirs = [d for d in DATA_DIR.glob("*") if d.is_dir()]
+        print(f"\nDirectorios encontrados ({len(dirs)}):")
+        
+        # Mostrar solo los últimos 10
+        for d in sorted(dirs)[-10:]:
+            mtime = datetime.fromtimestamp(os.path.getmtime(d))
+            print(f"  📁 {d.name} - modificado: {mtime}")
+        
+        if dirs:
+            # USAR LA MISMA LÓGICA QUE get_latest_directory()
+            latest = max(dirs, key=parse_dirname_timestamp)
+            print(f"\n✅ Directorio elegido como más reciente: {latest.name}")
+            print(f"   Timestamp parseado: {parse_dirname_timestamp(latest)}")
+    print("="*60)
+
 def get_latest_directory():
-    """Devuelve el directorio más reciente en Data/Data/"""
+    """Devuelve el directorio más reciente parseando el timestamp del nombre"""
     if not DATA_DIR.exists():
         return None
+    
     dirs = [d for d in DATA_DIR.glob("*") if d.is_dir()]
     if not dirs:
         return None
-    return max(dirs, key=os.path.getmtime)
+    
+    return max(dirs, key=parse_dirname_timestamp)
 
 def get_directory_by_date(target_date: str):
     """Encuentra el directorio más reciente que contenga la fecha especificada"""
@@ -43,7 +79,8 @@ def get_directory_by_date(target_date: str):
     if not matching_dirs:
         return None
     
-    return max(matching_dirs, key=os.path.getmtime)
+    # Usar la misma lógica de timestamp para elegir el más reciente
+    return max(matching_dirs, key=parse_dirname_timestamp)
 
 @app.get("/")
 def root():
@@ -234,6 +271,7 @@ def get_storm_maps_metadata_by_date(date: str, storm_id: str):
         "total_images": len(map_files),
         "images": [{"index": i, "filename": os.path.basename(path)} for i, path in enumerate(map_files)]
     }
+
 
 @app.get("/api/date/{date}/maps/{storm_id}/{index}")
 def get_storm_map_by_date_and_index(date: str, storm_id: str, index: int):
