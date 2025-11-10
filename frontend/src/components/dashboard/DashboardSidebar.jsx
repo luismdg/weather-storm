@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { MapPin, Wind, ChevronLeft, ChevronRight } from "lucide-react"
+import { MapPin, Wind, ChevronLeft, ChevronRight, MapIcon } from "lucide-react"
 
 function Stat({ label, value }) {
   return (
@@ -10,23 +10,16 @@ function Stat({ label, value }) {
   )
 }
 
-// --- Componente Calendario (Controlado por Props) ---
-
-// Helper para "parsear" el string YYYYMMDD a un objeto Date
 const parseDateString = (dateString) => {
-  // -----------------------------------------------------------------
-  // ¡CAMBIO! Si el string es nulo o inválido, devuelve null.
-  // -----------------------------------------------------------------
   if (!dateString || dateString.length !== 8) {
     return null;
   }
   const year = parseInt(dateString.substring(0, 4), 10);
-  const month = parseInt(dateString.substring(4, 6), 10) - 1; // Meses son 0-11 en JS
+  const month = parseInt(dateString.substring(4, 6), 10) - 1;
   const day = parseInt(dateString.substring(6, 8), 10);
   return new Date(year, month, day);
 }
 
-// Helper para formatear un objeto Date a YYYYMMDD
 const formatDateString = (dateObj) => {
   const year = dateObj.getFullYear();
   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -35,12 +28,7 @@ const formatDateString = (dateObj) => {
 }
 
 function Calendar({ activeDate, onDateChange }) {
-  
-  // 'selectedDateObj' puede ser null si 'activeDate' es null
   const selectedDateObj = parseDateString(activeDate);
-  
-  // 'displayDate' es el mes que estamos VIENDO.
-  // Usa la fecha seleccionada si existe, o la fecha de hoy si es null.
   const [displayDate, setDisplayDate] = useState(selectedDateObj || new Date());
 
   const daysOfWeek = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"]
@@ -54,8 +42,6 @@ function Calendar({ activeDate, onDateChange }) {
 
   for (let day = 1; day <= daysInMonth; day++) {
     const currentDate = new Date(year, month, day);
-    
-   
     const isSelected = selectedDateObj 
       ? (selectedDateObj.toDateString() === currentDate.toDateString()) 
       : false;
@@ -65,7 +51,7 @@ function Calendar({ activeDate, onDateChange }) {
         key={day}
         onClick={() => {
           const newDateString = formatDateString(currentDate);
-          onDateChange(newDateString); // Llama a App.js
+          onDateChange(newDateString);
           setDisplayDate(currentDate);
         }}
         className={`aspect-square flex items-center justify-center text-xs rounded-lg ${
@@ -102,15 +88,13 @@ function Calendar({ activeDate, onDateChange }) {
   )
 }
 
-// --- Componente Sidebar  ---
 export default function DashboardSidebar({ view, setView, mainStormView, activeStorms, activeDate, onDateChange }) {
-
   const severeStorms = activeStorms.filter((s) => (s.categoria || s.category || 0) >= 3).length
   const warningStorms = activeStorms.filter((s) => s.status === "warning" || s.estado === "warning").length
 
   return (
-    <aside className="h-full bg-gradient-to-b from-[#024b58] via-[#013f4e] to-[#002b36] flex flex-col border-l border-white/10 p-4">
-      <div className="flex gap-2 mb-4">
+    <aside className="h-full bg-gradient-to-b from-[#024b58] via-[#013f4e] to-[#002b36] flex flex-col border-l border-white/10 p-4 overflow-y-auto hide-scrollbar">
+      <div className="flex gap-2 mb-4 flex-shrink-0">
         <button
           onClick={() => setView("map")}
           className={`flex-1 p-2 rounded-xl border ${
@@ -119,7 +103,7 @@ export default function DashboardSidebar({ view, setView, mainStormView, activeS
               : "bg-[#024b58] text-slate-200 border-white/10"
           }`}
         >
-          <MapPin className="w-4 h-4 inline mr-1" /> Mapa
+          <MapIcon className="w-4 h-4 inline mr-1" /> Mapa
         </button>
         <button
           onClick={() => setView("dashboard")}
@@ -133,14 +117,22 @@ export default function DashboardSidebar({ view, setView, mainStormView, activeS
         </button>
       </div>
 
-      <div className="space-y-3 mb-6">
+      <div className="space-y-3 mb-6 flex-shrink-0">
         <Stat label="Tormentas Activas" value={activeStorms.length} />
         <Stat label="Tormentas Severas (Cat 3+)" value={severeStorms} />
         <Stat label="Alertas" value={warningStorms} />
       </div>
 
+      {/* CALENDARIO */}
+      <div className="mb-6 flex-shrink-0">
+        <Calendar 
+          activeDate={activeDate} 
+          onDateChange={onDateChange} 
+        />
+      </div>
+
       {mainStormView && (
-        <div className="mb-6">
+        <div className="mb-6 flex-shrink-0">
           <h3 className="text-sm font-bold text-[#EAF6F6] mb-3">Detalles de la Tormenta</h3>
           <div className="space-y-2 text-[#EAF6F6] text-xs">
             <p>Categoría {mainStormView.categoria || mainStormView.category || 'N/A'}</p>
@@ -152,14 +144,6 @@ export default function DashboardSidebar({ view, setView, mainStormView, activeS
           </div>
         </div>
       )}
-
-      <div className="mt-auto">
-        {/* Le pasamos los props de App.js al calendario */}
-        <Calendar 
-          activeDate={activeDate} 
-          onDateChange={onDateChange} 
-        />
-      </div>
     </aside>
   )
 }

@@ -6,8 +6,6 @@ import DashboardContent from "./components/dashboard/DashboardContent"
 
 const API_BASE_URL = "http://localhost:8000"
 
-// --- Ponemos las funciones helper aquí arriba ---
-
 // Función para procesar los datos de tormentas
 const processStormData = (data, imageDate) => {
   let storms = []
@@ -24,6 +22,10 @@ const processStormData = (data, imageDate) => {
         else if (lastType === "TD") categoria = 1
       }
       
+      const imageUrl = imageDate
+        ? `${API_BASE_URL}/api/date/${imageDate}/maps/${storm.id}/0?v=${imageDate}`
+        : `${API_BASE_URL}/api/maps/${storm.id}?v=${Date.now()}`
+
       storms.push({
         id: storm.id,
         nombre: storm.name,
@@ -43,21 +45,19 @@ const processStormData = (data, imageDate) => {
         year: storm.year,
         season: storm.season,
         ace: storm.ace,
-        invest: storm.invest, // ¡Importante para tu lógica de "97L"!
+        invest: storm.invest,
         storm_type: storm.storm_type,
         estado: storm.invest ? "watch" : "active",
         status: storm.invest ? "watch" : "active",
-        imageUrl: `${API_BASE_URL}/api/maps/${storm.id}?v=${imageDate || Date.now()}`
+        imageUrl: imageUrl 
       })
     }
   })
   
-  console.log("Tormentas procesadas:", storms)
-  console.log(`Total de tormentas: ${storms.length}`)
+  console.log("✅ Tormentas procesadas:", storms)
+  console.log(`📊 Total de tormentas: ${storms.length}`)
   return storms;
 }
-
-// --- Componente principal de la App ---
 
 function App() {
   const [view, setView] = useState("map")
@@ -67,25 +67,35 @@ function App() {
   const [activeStorms, setActiveStorms] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  
-  
   const [latestDate, setLatestDate] = useState(null)
 
-  // ESTE ES EL *ÚNICO* useEffect QUE CARGA DATOS
-  // Solo se dispara si 'latestDate' TIENE un valor.
+  // useEffect #1: Para el CALENDARIO (fechas históricas)
   useEffect(() => {
-    // Si la vista es dashboard Y HAY una fecha seleccionada, busca los datos.
     if (view === "dashboard" && latestDate) {
+      setMainStormView(null);
       fetchStormsByDate(latestDate);
     }
-  }, [latestDate, view]) 
+  }, [latestDate])
 
-  // Esta es la ÚNICA función que busca tormentas
+  // useEffect #2: Para CAMBIAR DE VISTA (Carga inicial o Limpieza)
+  useEffect(() => {
+    if (view === "dashboard") {
+      setMainStormView(null);
+      if (!latestDate) {
+        fetchLatestStorms();
+      }
+    } else {
+      setLatestDate(null);
+      setActiveStorms([]);
+      setError(null);
+    }
+  }, [view])
+
+  // Función para el CALENDARIO (Histórico)
   const fetchStormsByDate = async (dateString) => {
     try {
       setLoading(true)
       setError(null)
-      setMainStormView(null) 
       
       const response = await fetch(`${API_BASE_URL}/api/date/${dateString}/storms`)
       
@@ -97,18 +107,34 @@ function App() {
       }
       
       const data = await response.json()
-      console.log(`Datos (${dateString}) recibidos:`, data)
+      console.log(`📦 Datos COMPLETOS (${dateString}) recibidos:`, data)
 
-      if (!data.data || Object.keys(data.data).length === 0) {
-        setActiveStorms([])
-        throw new Error(`No hay tormentas activas registradas para la fecha ${dateString}.`);
+      const stormsData = data.data || {};
+      console.log(`🗂️ stormsData bruto:`, stormsData)
+      
+      let actualStormsData = null;
+      const tormentasKey = Object.keys(stormsData).find(key => 
+        key.startsWith('tormentas') && typeof stormsData[key] === 'object'
+      );
+      
+      if (tormentasKey) {
+        actualStormsData = stormsData[tormentasKey];
+        console.log(`✅ Encontrado archivo: ${tormentasKey}`)
       }
+      
+      console.log(`🌀 Datos de tormentas a procesar:`, actualStormsData)
 
-      const storms = processStormData(data.data, dateString);
-      setActiveStorms(storms)
+      if (!actualStormsData || Object.keys(actualStormsData).length === 0) {
+        setActiveStorms([])
+        console.log(`⚠️ No hay tormentas activas para la fecha ${dateString}.`);
+      } else {
+        console.log(`🔑 Claves de tormentas encontradas:`, Object.keys(actualStormsData))
+        const storms = processStormData(actualStormsData, dateString);
+        setActiveStorms(storms)
+      }
       
     } catch (err) {
-      console.error(`Error fetching storms for date ${dateString}:`, err)
+      console.error(`❌ Error fetching storms for date ${dateString}:`, err)
       setError(err.message) 
       setActiveStorms([]) 
     } finally {
@@ -116,8 +142,36 @@ function App() {
     }
   }
 
+  // Función para la "Última Lectura"
+  const fetchLatestStorms = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      console.log(`🕐 Cargando ÚLTIMA LECTURA...`)
+      const response = await fetch(`${API_BASE_URL}/api/storms`, { cache: 'no-store' })
+      
+      if (!response.ok) {
+        throw new Error('No se pudieron cargar los datos de tormentas')
+      }
+      
+      const data = await response.json()
+      console.log("📦 Datos (ÚLTIMA LECTURA) recibidos:", data)
+      
+      const storms = processStormData(data, null);
+      setActiveStorms(storms)
+      
+    } catch (err) {
+      console.error('❌ Error fetching latest storms:', err)
+      setError(err.message)
+      setActiveStorms([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <div className="flex h-screen bg-[#013f4e] text-white">
+    <div className="flex min-h-screen bg-[#013f4e] text-white overflow-hidden">
       <div className="w-80 border-r border-white/10">
         {view === "map" ? (
           <RainmapSidebar
@@ -134,7 +188,6 @@ function App() {
             setView={setView} 
             mainStormView={mainStormView}
             activeStorms={activeStorms}
-            // Pasamos la fecha activa (que es null al inicio)
             activeDate={latestDate}
             onDateChange={setLatestDate}
           />
@@ -151,7 +204,7 @@ function App() {
             activeStorms={activeStorms}
             loading={loading}
             error={error}
-            latestDate={latestDate} // Pasa 'null' al inicio , se va a cambiar cuando se implemente lo de ultima carga
+            latestDate={latestDate}
           />
         )}
       </div>
