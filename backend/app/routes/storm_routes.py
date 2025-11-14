@@ -5,9 +5,10 @@ import json, glob, os, time
 from datetime import datetime
 
 router = APIRouter()
-DATA_DIR = Path(
-    r"C:\Users\hanna\OneDrive\Documents\final\weather-storm\Data\Data"
-)
+# Obtener el directorio base del proyecto (donde está este archivo)
+BASE_DIR = Path(__file__).parent.parent.parent.parent
+DATA_DIR = BASE_DIR / "Data" / "Data"
+print(f"DATA_DIR: {DATA_DIR}")
 
 # --- CACHE SIMPLE ---
 # Guardará las rutas a los directorios por 5 minutos (300 segundos)
@@ -88,9 +89,7 @@ def get_directory_by_date(target_date: str):
     if not DATA_DIR.exists():
         return None
     matching_dirs = [
-        dir_path
-        for dir_path in DATA_DIR.glob(f"*{target_date}*")
-        if dir_path.is_dir()
+        dir_path for dir_path in DATA_DIR.glob(f"*{target_date}*") if dir_path.is_dir()
     ]
 
     # 3. Calcular y guardar en cache
@@ -108,13 +107,11 @@ def get_all_dirs_by_date(target_date: str):
     """Encuentra TODOS los directorios de una fecha, ordenados por timestamp."""
     if not DATA_DIR.exists():
         return []
-    
+
     matching_dirs = [
-        dir_path
-        for dir_path in DATA_DIR.glob(f"*{target_date}*")
-        if dir_path.is_dir()
+        dir_path for dir_path in DATA_DIR.glob(f"*{target_date}*") if dir_path.is_dir()
     ]
-    
+
     # Ordenar por el timestamp para que las imágenes salgan en orden
     return sorted(matching_dirs, key=parse_dirname_timestamp)
 
@@ -282,6 +279,7 @@ def get_storm_map(storm_id: str):
 # (Estas rutas usan 'glob' recursivo y pueden ser lentas)
 # (Sería ideal optimizarlas si la lentitud persiste)
 
+
 @router.get("/date/{date}/maps/general/list")
 def get_all_general_maps_metadata_by_date(date: str):
     """
@@ -361,13 +359,12 @@ def get_storm_maps_metadata_by_date(date: str, storm_id: str):
         raise HTTPException(
             status_code=404, detail=f"No se encontraron datos para la fecha {date}."
         )
-    
+
     all_image_paths = []
     for dir_path in all_dirs:
         map_dir = dir_path / "Mapas"
         if map_dir.exists():
             all_image_paths.extend(sorted(map_dir.glob(f"*{storm_id}*.png")))
-
 
     if not all_image_paths:
         raise HTTPException(
@@ -397,7 +394,7 @@ def get_storm_map_by_date_and_index(date: str, storm_id: str, index: int):
         raise HTTPException(
             status_code=404, detail=f"No se encontraron datos para la fecha {date}."
         )
-    
+
     all_image_paths = []
     for dir_path in all_dirs:
         map_dir = dir_path / "Mapas"
