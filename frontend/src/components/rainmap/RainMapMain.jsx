@@ -18,6 +18,42 @@ export default function Rainmap({
     return (
         <div className="flex min-h-screen bg-rainmap-bg text-rainmap-contrast overflow-hidden relative">
 
+            {/* --- BARRA SUPERIOR PARA MÓVIL --- */}
+            <div className="fixed top-0 left-0 right-0 h-16 bg-rainmap-glass backdrop-blur-2xl border-b border-rainmap-glass-border z-40 flex items-center justify-between px-4 md:hidden">
+                {/* Botón Hamburguesa a la izquierda */}
+                <button
+                    onClick={() => setSidebarOpen(true)}
+                    className="p-2 bg-rainmap-glass/60 backdrop-blur-xl border border-rainmap-glass-border rounded-lg shadow-lg hover:bg-rainmap-accent2/20 hover:border-rainmap-accent2/40 transition-all duration-300"
+                    aria-label="Abrir menú"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6 text-rainmap-contrast">
+                        <path strokeLinecap="round" strokeLinejoin="round"
+                            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+
+                {/* Bandera de México con Liquid Glass Effect */}
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        {/* Contenedor con efecto de vidrio líquido */}
+                        <div>
+                            <img
+                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_of_Mexico.svg/2560px-Flag_of_Mexico.svg.png"
+                                alt="Bandera de México"
+                                className="w-8 h-5 object-cover rounded-sm"
+                            />
+                        </div>
+                        {/* Efecto de brillo sutil */}
+                        <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-rainmap-accent2/10 to-transparent pointer-events-none"></div>
+                    </div>
+                </div>
+            </div>
+
             {/* SIDEBAR (CON TRANSICIÓN) */}
             <div
                 className={`
@@ -38,7 +74,7 @@ export default function Rainmap({
                     weatherData={weatherData}
                     setWeatherData={setWeatherData}
                     onNavigateHome={onNavigateHome}
-                        onToggleSidebar={() => setSidebarOpen(false)}
+                    onToggleSidebar={() => setSidebarOpen(false)}
                 />
             </div>
 
@@ -46,15 +82,14 @@ export default function Rainmap({
             {sidebarOpen && (
                 <div
                     onClick={() => setSidebarOpen(false)}
-                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden"
+                    className="fixed inset-0 bg-rainmap-bg/40 backdrop-blur-sm z-30 md:hidden"
                 />
             )}
 
-            {/* CONTENIDO */}
-            <div className="flex-1">
+            {/* CONTENIDO CON MARGIN SUPERIOR PARA MÓVIL */}
+            <div className="flex-1 mt-16 md:mt-0">
                 <RainmapContent
                     selectedCity={selectedCity}
-                    onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
                 />
             </div>
         </div>
