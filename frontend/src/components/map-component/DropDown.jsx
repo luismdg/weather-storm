@@ -15,7 +15,7 @@ export default function Dropdown() {
             <div
                 className="
                     dropdown-panel
-                    absolute bottom-16 left-4 z-40
+                    absolute z-40
                 "
             >
                 <div className="glass-box">

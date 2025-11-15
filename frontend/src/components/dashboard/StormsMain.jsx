@@ -74,14 +74,6 @@ export default function Storms({
                     onNavigateHome={onNavigateHome}
                     onToggleSidebar={() => setOpen(false)}
                 />
-
-
-                <button
-                    onClick={() => setOpen(false)}
-                    className="absolute top-4 right-4 md:hidden p-2 text-white"
-                >
-                    ✖
-                </button>
             </div>
 
             {/* --- OVERLAY --- */}
