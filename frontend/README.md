@@ -1,70 +1,173 @@
-# Getting Started with Create React App
+# 🌦️ Weather Prediction App  
+A full-stack weather prediction platform for Mexico, providing interactive rain maps, city forecasts, backend computations, and an optional Android mobile build through Capacitor.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repository contains the **React.js frontend**, which connects to the FastAPI backend hosted on **Railway**.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Backend Information  
+The backend is automatically deployed to Railway and served from:
 
-### `npm start`
+🔗 **Backend Root URL:**  
+https://weatherstorm-app-backend-weather-app.up.railway.app/
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+📦 **Backend Source Code:**  
+https://github.com/luismdg/weatherstorm-app-backend
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+# 1. 📋 Prerequisites  
+Before running the frontend, you must have:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Node.js** + **npm**
+- (Optional) **Android Studio** if you want to build the mobile app using Capacitor
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# 2. 🛠️ Frontend Setup
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Navigate to the frontend folder:
+```bash
+cd frontend
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Install dependencies:
+```bash
+npm install maplibre-gl leaflet react-leaflet three
+```
 
-### `npm run eject`
+### Start the development server:
+```bash
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Your React frontend will run at:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+👉 **http://localhost:3000/**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# 3. 📱 Running the Web App as a Mobile App (Capacitor Setup)
 
-## Learn More
+This project supports optional mobile builds using **Capacitor**.  
+You **do NOT** modify the mobile code; the mobile app simply mirrors the webapp build.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Follow these steps **ONLY if you want the Android app version**:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 3.1 Install Capacitor (if not installed yet)
+```bash
+npm install @capacitor/core @capacitor/cli
+npm install @capacitor/android
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## 3.2 Build the web application
+```bash
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 3.3 Copy the web build into the Android project
+```bash
+npx cap copy
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+*(If this is your first time setting up, run `npx cap add android` once.)*
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 3.4 Open Android Studio
+```bash
+npx cap open android
+```
 
-### Deployment
+This opens the auto-generated Android project.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+# 4. 📱 Running the App on a Physical Android Device (Wireless Debugging)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Follow these steps to install and test the app on your Android phone:
+
+---
+
+### 4.1 Enable Wireless Debugging on your phone  
+On your Android device, go to:
+
+**Settings → Developer Options → Wireless Debugging → Enable**
+
+Then tap:
+
+👉 **"Pair device with QR code"**
+
+---
+
+### 4.2 Show the QR Pairing Code in Android Studio  
+Inside Android Studio:
+
+1. Open the **Device Manager**  
+2. Click **Pair using Wi-Fi**  
+3. A **QR code** will appear  
+4. Scan it with your phone
+
+Your device will now connect to Android Studio.
+
+---
+
+### 4.3 Run the App  
+In Android Studio:
+
+- Press **▶ Run**
+- Select your Android device
+
+The app will install and run instantly on your phone.
+
+---
+
+# 5. 🌐 Project Workflow Summary
+
+✔ Backend runs on Cloud (Railway)  
+✔ Frontend runs locally with `npm start`  
+✔ Optional Capacitor mobile build  
+✔ Android device debugging supported
+
+---
+
+# 6. 🧩 Tech Stack
+
+### **Frontend**
+- React.js  
+- MapLibre GL  
+- Leaflet  
+- Three.js  
+- Capacitor (Android optional)
+
+### **Backend**
+- FastAPI  
+- Python  
+- Railway Deployment  
+
+---
+
+# 7. 📦 Project Setup After Cloning
+
+After cloning both repositories:
+
+### Frontend:
+```bash
+cd frontend
+npm install
+npm start
+```
+
+### Backend:
+Already running in the cloud — **no need to install locally** unless desired.
+
+---
+
+# 📄 License  
+This project is for personal, educational, and hobby use.

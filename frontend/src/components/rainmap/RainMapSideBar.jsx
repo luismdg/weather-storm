@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
+
 export default function RainmapSidebar({
   view,
   setView,
@@ -9,8 +11,6 @@ export default function RainmapSidebar({
   onToggleSidebar,
   onNavigateHome
 }) {
-  const API_BASE_URL = "http://localhost:8000/rainmap"
-
   const MEXICAN_CITIES = [{ name: "Ciudad de Mexico", state: "CDMX" }, { name: "Guadalajara", state: "Jalisco" }, { name: "Monterrey", state: "Nuevo León" }, { name: "Puebla", state: "Puebla" }, { name: "Tijuana", state: "Baja California" }, { name: "León", state: "Guanajuato" }, { name: "Juárez", state: "Chihuahua" }, { name: "Zapopan", state: "Jalisco" }, { name: "Mérida", state: "Yucatán" }, { name: "San Luis Potosí", state: "San Luis Potosí" }, { name: "Aguascalientes", state: "Aguascalientes" }, { name: "Hermosillo", state: "Sonora" }, { name: "Saltillo", state: "Coahuila" }, { name: "Mexicali", state: "Baja California" }, { name: "Culiacán", state: "Sinaloa" }, { name: "Querétaro", state: "Querétaro" }, { name: "Chihuahua", state: "Chihuahua" }, { name: "Morelia", state: "Michoacán" }, { name: "Toluca", state: "Estado de México" }, { name: "Cancún", state: "Quintana Roo" }, { name: "Acapulco", state: "Guerrero" }, { name: "Torreón", state: "Coahuila" }, { name: "Reynosa", state: "Tamaulipas" }, { name: "Tuxtla Gutiérrez", state: "Chiapas" }, { name: "Veracruz", state: "Veracruz" }, { name: "Mazatlán", state: "Sinaloa" }, { name: "Durango", state: "Durango" }, { name: "Oaxaca", state: "Oaxaca" }, { name: "Tampico", state: "Tamaulipas" }, { name: "Irapuato", state: "Guanajuato" }, { name: "Celaya", state: "Guanajuato" }, { name: "Cuernavaca", state: "Morelos" },]
 
   const [searchQuery, setSearchQuery] = useState("")
@@ -52,7 +52,7 @@ export default function RainmapSidebar({
     if (onToggleSidebar) onToggleSidebar()
 
     try {
-      const res = await fetch(`${API_BASE_URL}/city?selectedCity=${city.name}`)
+      const res = await fetch(`${API_BASE_URL}/rainmap/city?selectedCity=${city.name}`)
       if (!res.ok) throw new Error("Error fetching city data")
 
       const data = await res.json()

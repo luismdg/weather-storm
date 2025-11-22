@@ -281,7 +281,7 @@ export default function HomePage({ onNavigate }) {
                     {/* ✅ TODAS LAS CLASES SON VARIABLES TAILWIND */}
                     <div className="bg-rainmap-surface backdrop-blur-xl border border-rainmap-glass-border rounded-2xl p-8 md:p-12 shadow-[0_8px_30px_rgba(0,0,0,0.25)] relative">
                         <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-rainmap-contrast mb-6 text-shadow-glow">
-                            RainMap
+                            On-Rain
                         </h1>
                         <p className="mt-4 text-lg md:text-xl text-rainmap-muted max-w-2xl mx-auto leading-relaxed">
                             Plataforma de monitoreo meteorológico en tiempo real.
@@ -312,12 +312,12 @@ export default function HomePage({ onNavigate }) {
                     </div>
 
                     <div className="flex items-center justify-center gap-4 mt-8 max-w-4xl mx-auto">
-                        <div className="bg-rainmap-surface w-[45%] h-[120px] backdrop-blur-xl border border-rainmap-glass-border rounded-2xl p-4 text-rainmap-contrast transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(0,240,255,0.1)]">
+                        <div className="bg-rainmap-surface w-[45%] min-h-[120px] backdrop-blur-xl border border-rainmap-glass-border rounded-2xl p-4 text-rainmap-contrast transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(0,240,255,0.1)]">
                             <h3 className="font-semibold text-rainmap-accent mb-2">Tiempo Real</h3>
                             <p className="text-sm text-rainmap-muted">Datos meteorológicos actualizados continuamente</p>
                         </div>
 
-                        <div className="bg-rainmap-surface w-[45%] h-[120px] backdrop-blur-xl border border-rainmap-glass-border rounded-2xl p-4 text-rainmap-contrast transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(79,195,247,0.1)]">
+                        <div className="bg-rainmap-surface w-[45%] min-h-[120px] backdrop-blur-xl border border-rainmap-glass-border rounded-2xl p-4 text-rainmap-contrast transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(79,195,247,0.1)]">
                             <h3 className="font-semibold text-rainmap-accent2 mb-2">Precisión</h3>
                             <p className="text-sm text-rainmap-muted">Información detallada por ubicación</p>
                         </div>

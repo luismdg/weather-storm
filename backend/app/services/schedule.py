@@ -1,5 +1,4 @@
-
-#Codigo Hannah - Version con traducción completa y limpieza de texto
+# Codigo Hannah - Version con traducción completa y limpieza de texto
 from tropycal import realtime
 import json
 from datetime import datetime
@@ -16,7 +15,7 @@ from tzlocal import get_localzone
 # ==============================
 fecha = datetime.now()
 data_directory = "..\..\..\Data\Data"
-directorio = os.path.join(data_directory, f'{fecha:%Y%m%d_%H%M%S}')
+directorio = os.path.join(data_directory, f"{fecha:%Y%m%d_%H%M%S}")
 os.makedirs(directorio, exist_ok=True)
 
 # Subcarpetas
@@ -26,7 +25,7 @@ os.makedirs(mapas_dir, exist_ok=True)
 os.makedirs(json_dir, exist_ok=True)
 
 # Archivos base
-archivo_general = f'tormentas{fecha:%Y%m%d_%H%M%S}.json'
+archivo_general = f"tormentas{fecha:%Y%m%d_%H%M%S}.json"
 mapa_general = f"mapa_{fecha:%Y%m%d_%H%M%S}.png"
 ruta_general_mapa = os.path.join(mapas_dir, mapa_general)
 ruta_general_datos = os.path.join(json_dir, archivo_general)
@@ -35,17 +34,17 @@ ruta_general_datos = os.path.join(json_dir, archivo_general)
 # TEXTOS A ELIMINAR (serán borrados completamente)
 # ==============================
 TEXTOS_A_ELIMINAR = [
-    'The cone of uncertainty',
-    'cone of uncertainty',
-    'Plot generated using tropYcal',
-    'Plot generated using tropycal',
-    'Gráfico generado usando tropYcal',
-    'experimental intensity',
-    'using 2025 official error',
-    'in this graphic after',
-    'typically contains',
-    'of the center location',
-    'from the official NHC forecast',
+    "The cone of uncertainty",
+    "cone of uncertainty",
+    "Plot generated using tropYcal",
+    "Plot generated using tropycal",
+    "Gráfico generado usando tropYcal",
+    "experimental intensity",
+    "using 2025 official error",
+    "in this graphic after",
+    "typically contains",
+    "of the center location",
+    "from the official NHC forecast",
 ]
 
 # ==============================
@@ -53,28 +52,28 @@ TEXTOS_A_ELIMINAR = [
 # Solo para el MAPA GENERAL
 # ==============================
 TEXTOS_NO_TRADUCIR_MAPA_GENERAL = [
-    'Summary & NHC 7-Day Formation Outlook',
-    'Valid',
-    'UTC',
-    'NHC',
+    "Summary & NHC 7-Day Formation Outlook",
+    "Valid",
+    "UTC",
+    "NHC",
 ]
 
 # ==============================
 # TEXTOS DE LEYENDA A ELIMINAR (escalas de categorías)
 # ==============================
 LEYENDA_A_ELIMINAR = [
-    'Category 1',
-    'Category 2',
-    'Category 3',
-    'Category 4',
-    'Category 5',
-    'Tropical Storm',
-    'Tropical Depression',
-    'Subtropical',
-    'Non Tropical',
-    'No Tropical',
-    'Desconocido',
-    'Unknown',
+    "Category 1",
+    "Category 2",
+    "Category 3",
+    "Category 4",
+    "Category 5",
+    "Tropical Storm",
+    "Tropical Depression",
+    "Subtropical",
+    "Non Tropical",
+    "No Tropical",
+    "Desconocido",
+    "Unknown",
 ]
 
 # ==============================
@@ -82,93 +81,87 @@ LEYENDA_A_ELIMINAR = [
 # ==============================
 TRADUCCIONES = {
     # TÍTULOS Y PRINCIPALES (para mapas individuales)
-    'Tropical Storm': 'Tormenta Tropical',
-    'NHC Issued': 'Emitido por CNH',
-    'Tropical Depression': 'Depresión Tropical',
-    'Subtropical': 'Subtropical',
-    'Hurricane': 'Huracán',
-
+    "Tropical Storm": "Tormenta Tropical",
+    "NHC Issued": "Emitido por CNH",
+    "Tropical Depression": "Depresión Tropical",
+    "Subtropical": "Subtropical",
+    "Hurricane": "Huracán",
     # INTENSIDAD Y DATOS
-    'Current Intensity': 'Intensidad Actual',
-    'Maximum Intensity': 'Intensidad Máxima',
-    'mph': 'mph',
-    'hPa': 'hPa',
-    'knots': 'nudos',
-    'kt': 'kt',
-
+    "Current Intensity": "Intensidad Actual",
+    "Maximum Intensity": "Intensidad Máxima",
+    "mph": "mph",
+    "hPa": "hPa",
+    "knots": "nudos",
+    "kt": "kt",
     # TIPOS DE CICLÓN
-    'No Tropical': 'No Tropical',
-    'Non Tropical': 'No Tropical',
-    'Desconocido': 'Desconocido',
-    'Unknown': 'Desconocido',
-    'Extratropical': 'Extratropical',
-    'Category': 'Categoría',
-
+    "No Tropical": "No Tropical",
+    "Non Tropical": "No Tropical",
+    "Desconocido": "Desconocido",
+    "Unknown": "Desconocido",
+    "Extratropical": "Extratropical",
+    "Category": "Categoría",
     # TIEMPO
-    'Forecast': 'Pronóstico',
-    'Track': 'Trayectoria',
-    'History': 'Historial',
-    'Current': 'Actual',
-
+    "Forecast": "Pronóstico",
+    "Track": "Trayectoria",
+    "History": "Historial",
+    "Current": "Actual",
     # DÍAS DE LA SEMANA (COMPLETOS Y ABREVIADOS)
-    'Monday': 'Lunes',
-    'Tuesday': 'Martes',
-    'Wednesday': 'Miércoles',
-    'Thursday': 'Jueves',
-    'Friday': 'Viernes',
-    'Saturday': 'Sábado',
-    'Sunday': 'Domingo',
-    'Mon': 'Lun',
-    'Tue': 'Mar',
-    'Wed': 'Mié',
-    'Thu': 'Jue',
-    'Fri': 'Vie',
-    'Sat': 'Sáb',
-    'Sun': 'Dom',
-
+    "Monday": "Lunes",
+    "Tuesday": "Martes",
+    "Wednesday": "Miércoles",
+    "Thursday": "Jueves",
+    "Friday": "Viernes",
+    "Saturday": "Sábado",
+    "Sunday": "Domingo",
+    "Mon": "Lun",
+    "Tue": "Mar",
+    "Wed": "Mié",
+    "Thu": "Jue",
+    "Fri": "Vie",
+    "Sat": "Sáb",
+    "Sun": "Dom",
     # MESES (COMPLETOS Y ABREVIADOS)
-    'January': 'Enero',
-    'February': 'Febrero',
-    'March': 'Marzo',
-    'April': 'Abril',
-    'May': 'Mayo',
-    'June': 'Junio',
-    'July': 'Julio',
-    'August': 'Agosto',
-    'September': 'Septiembre',
-    'October': 'Octubre',
-    'November': 'Noviembre',
-    'December': 'Diciembre',
-    'Jan': 'Ene',
-    'Feb': 'Feb',
-    'Mar': 'Mar',
-    'Apr': 'Abr',
-    'Jun': 'Jun',
-    'Jul': 'Jul',
-    'Aug': 'Ago',
-    'Sep': 'Sep',
-    'Oct': 'Oct',
-    'Nov': 'Nov',
-    'Dec': 'Dic',
-
+    "January": "Enero",
+    "February": "Febrero",
+    "March": "Marzo",
+    "April": "Abril",
+    "May": "Mayo",
+    "June": "Junio",
+    "July": "Julio",
+    "August": "Agosto",
+    "September": "Septiembre",
+    "October": "Octubre",
+    "November": "Noviembre",
+    "December": "Diciembre",
+    "Jan": "Ene",
+    "Feb": "Feb",
+    "Mar": "Mar",
+    "Apr": "Abr",
+    "Jun": "Jun",
+    "Jul": "Jul",
+    "Aug": "Ago",
+    "Sep": "Sep",
+    "Oct": "Oct",
+    "Nov": "Nov",
+    "Dec": "Dic",
     # DIRECCIONES
-    'North': 'Norte',
-    'South': 'Sur',
-    'East': 'Este',
-    'West': 'Oeste',
-    'Central': 'Central',
-    'Atlantic': 'Atlántico',
-    'Pacific': 'Pacífico',
-
+    "North": "Norte",
+    "South": "Sur",
+    "East": "Este",
+    "West": "Oeste",
+    "Central": "Central",
+    "Atlantic": "Atlántico",
+    "Pacific": "Pacífico",
     # OTROS
-    'Unknown': 'Desconocido',
-    'Legend': 'Leyenda',
-    'Basin': 'Cuenca',
-    'Formation': 'Formación',
-    'Outlook': 'Pronóstico',
-    'Summary': 'Resumen',
-    'Day': 'Día',
+    "Unknown": "Desconocido",
+    "Legend": "Leyenda",
+    "Basin": "Cuenca",
+    "Formation": "Formación",
+    "Outlook": "Pronóstico",
+    "Summary": "Resumen",
+    "Day": "Día",
 }
+
 
 def debe_mantener_ingles(texto, es_mapa_general=False):
     """
@@ -191,6 +184,7 @@ def debe_mantener_ingles(texto, es_mapa_general=False):
 
     return False
 
+
 def es_texto_leyenda(texto):
     """
     Verifica si un texto es parte de la leyenda de categorías.
@@ -206,6 +200,7 @@ def es_texto_leyenda(texto):
 
     return False
 
+
 def debe_eliminar_texto(texto):
     """
     Verifica si un texto debe ser eliminado completamente.
@@ -220,6 +215,7 @@ def debe_eliminar_texto(texto):
             return True
 
     return False
+
 
 def traducir_texto_completo(texto, es_mapa_general=False):
     """
@@ -240,18 +236,18 @@ def traducir_texto_completo(texto, es_mapa_general=False):
     texto_traducido = texto
 
     # Ordenar por longitud descendente para evitar reemplazos parciales
-    items_ordenados = sorted(TRADUCCIONES.items(), key=lambda x: len(x[0]), reverse=True)
+    items_ordenados = sorted(
+        TRADUCCIONES.items(), key=lambda x: len(x[0]), reverse=True
+    )
 
     for ingles, espanol in items_ordenados:
         # Reemplazo insensible a mayúsculas/minúsculas
         texto_traducido = re.sub(
-            re.escape(ingles),
-            espanol,
-            texto_traducido,
-            flags=re.IGNORECASE
+            re.escape(ingles), espanol, texto_traducido, flags=re.IGNORECASE
         )
 
     return texto_traducido
+
 
 def limpiar_y_traducir_matplotlib(es_mapa_general=False):
     """
@@ -273,9 +269,13 @@ def limpiar_y_traducir_matplotlib(es_mapa_general=False):
                         textos_a_remover.append(text_obj)
                         print(f"   🗑️  Eliminando: '{texto_original[:60]}...'")
                     elif debe_mantener_ingles(texto_original, es_mapa_general):
-                        print(f"   🔒 Manteniendo en inglés: '{texto_original[:60]}...'")
+                        print(
+                            f"   🔒 Manteniendo en inglés: '{texto_original[:60]}...'"
+                        )
                     else:
-                        texto_traducido = traducir_texto_completo(texto_original, es_mapa_general)
+                        texto_traducido = traducir_texto_completo(
+                            texto_original, es_mapa_general
+                        )
                         if texto_traducido != texto_original:
                             text_obj.set_text(texto_traducido)
                             print(f"   ✏️  Traducido: '{texto_original[:40]}...'")
@@ -316,15 +316,20 @@ def limpiar_y_traducir_matplotlib(es_mapa_general=False):
                     # En mapa general, mantener la leyenda tal cual
                     handles = legend.legend_handles
                     labels_originales = [t.get_text() for t in legend.get_texts()]
-                    labels_traducidas = [traducir_texto_completo(label, es_mapa_general) for label in labels_originales]
+                    labels_traducidas = [
+                        traducir_texto_completo(label, es_mapa_general)
+                        for label in labels_originales
+                    ]
 
                     # Recrear leyenda
                     ax.legend(
                         handles,
                         labels_traducidas,
-                        loc=legend._loc if hasattr(legend, '_loc') else 'best',
+                        loc=legend._loc if hasattr(legend, "_loc") else "best",
                         frameon=legend.get_frame_on(),
-                        fontsize=legend.get_texts()[0].get_fontsize() if legend.get_texts() else None
+                        fontsize=legend.get_texts()[0].get_fontsize()
+                        if legend.get_texts()
+                        else None,
                     )
 
             # 4. Textos dentro del eje
@@ -337,7 +342,9 @@ def limpiar_y_traducir_matplotlib(es_mapa_general=False):
                     # En mapas individuales, eliminar textos de leyenda
                     textos_ax_a_remover.append(text)
                 else:
-                    texto_traducido = traducir_texto_completo(texto_original, es_mapa_general)
+                    texto_traducido = traducir_texto_completo(
+                        texto_original, es_mapa_general
+                    )
                     text.set_text(texto_traducido)
 
             # Remover textos del eje
@@ -348,33 +355,41 @@ def limpiar_y_traducir_matplotlib(es_mapa_general=False):
             for label in ax.get_xticklabels():
                 texto_label = label.get_text()
                 if not debe_eliminar_texto(texto_label):
-                    label.set_text(traducir_texto_completo(texto_label, es_mapa_general))
+                    label.set_text(
+                        traducir_texto_completo(texto_label, es_mapa_general)
+                    )
 
             for label in ax.get_yticklabels():
                 texto_label = label.get_text()
                 if not debe_eliminar_texto(texto_label):
-                    label.set_text(traducir_texto_completo(texto_label, es_mapa_general))
+                    label.set_text(
+                        traducir_texto_completo(texto_label, es_mapa_general)
+                    )
 
         # 3. Título de figura
         if fig._suptitle:
             suptitle_texto = fig._suptitle.get_text()
             if not debe_eliminar_texto(suptitle_texto):
-                fig._suptitle.set_text(traducir_texto_completo(suptitle_texto, es_mapa_general))
+                fig._suptitle.set_text(
+                    traducir_texto_completo(suptitle_texto, es_mapa_general)
+                )
 
         # 4. Buscar y eliminar cualquier otro texto
-        for obj in fig.findobj(lambda x: hasattr(x, 'get_text') and callable(x.get_text)):
+        for obj in fig.findobj(
+            lambda x: hasattr(x, "get_text") and callable(x.get_text)
+        ):
             try:
                 texto = obj.get_text()
                 if texto and debe_eliminar_texto(texto):
-                    if hasattr(obj, 'remove'):
+                    if hasattr(obj, "remove"):
                         obj.remove()
                 elif texto and not es_mapa_general and es_texto_leyenda(texto):
                     # Eliminar textos de leyenda en mapas individuales
-                    if hasattr(obj, 'remove'):
+                    if hasattr(obj, "remove"):
                         obj.remove()
                 elif texto:
                     texto_traducido = traducir_texto_completo(texto, es_mapa_general)
-                    if hasattr(obj, 'set_text'):
+                    if hasattr(obj, "set_text"):
                         obj.set_text(texto_traducido)
             except:
                 pass
@@ -382,6 +397,7 @@ def limpiar_y_traducir_matplotlib(es_mapa_general=False):
     except Exception as e:
         print(f"⚠️ Error durante la limpieza y traducción: {e}")
         traceback.print_exc()
+
 
 def guardar_mapa_limpio(ruta_imagen):
     """
@@ -393,11 +409,11 @@ def guardar_mapa_limpio(ruta_imagen):
         plt.savefig(
             ruta_imagen,
             dpi=300,
-            bbox_inches='tight',
-            facecolor='white',
-            edgecolor='none',
-            format='png',
-            pil_kwargs={'optimize': True}
+            bbox_inches="tight",
+            facecolor="white",
+            edgecolor="none",
+            format="png",
+            pil_kwargs={"optimize": True},
         )
 
         print(f"✅ Mapa limpio guardado: {ruta_imagen}")
@@ -407,6 +423,7 @@ def guardar_mapa_limpio(ruta_imagen):
         print(f"❌ Error al guardar mapa: {e}")
         traceback.print_exc()
         plt.close()
+
 
 # ==============================
 # FUNCIONES AUXILIARES
@@ -425,13 +442,20 @@ def serializar(obj):
         return [serializar(i) for i in obj]
     return obj
 
+
 # ==============================
 # CONFIGURAR MATPLOTLIB
 # ==============================
 import matplotlib
-matplotlib.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'Helvetica', 'sans-serif']
-matplotlib.rcParams['axes.unicode_minus'] = False
-matplotlib.rcParams['figure.max_open_warning'] = 50
+
+matplotlib.rcParams["font.sans-serif"] = [
+    "DejaVu Sans",
+    "Arial",
+    "Helvetica",
+    "sans-serif",
+]
+matplotlib.rcParams["axes.unicode_minus"] = False
+matplotlib.rcParams["figure.max_open_warning"] = 50
 
 # ==============================
 # DESCARGA Y PROCESAMIENTO
@@ -478,24 +502,34 @@ for i, storm_id in enumerate(storms_list):
         print(f"\n🌪️  Procesando: {storm_id}")
         storm = realtime_obj.get_storm(storm_id)
 
-        datos_tormentas_general[i] = serializar({
-            "id": storm.id,
-            "name": storm.name,
-            "year": storm.year,
-            'date': datetime.now(),
-            'zona_horaria': get_localzone(),
-            "season": storm.season,
-            "basin": storm.basin,
-            "max_wind": storm.attrs["vmax"][-1] if "vmax" in storm.attrs and storm.attrs["vmax"].size > 0 else None,
-            "min_pressure": storm.attrs["mslp"][-1] if "mslp" in storm.attrs and storm.attrs["mslp"].size > 0 else None,
-            "ace": storm.ace,
-            "invest": storm.invest,
-            "start_time": storm.attrs["time"][0] if "time" in storm.attrs and storm.attrs["time"].size > 0 else None,
-            "end_time": storm.attrs["time"][-1] if "time" in storm.attrs and storm.attrs["time"].size > 0 else None,
-            "source": storm.source_info,
-            "category": getattr(storm, "category", None),
-            "storm_type": getattr(storm, "type", None)
-        })
+        datos_tormentas_general[i] = serializar(
+            {
+                "id": storm.id,
+                "name": storm.name,
+                "year": storm.year,
+                "date": datetime.now(),
+                "zona_horaria": get_localzone(),
+                "season": storm.season,
+                "basin": storm.basin,
+                "max_wind": storm.attrs["vmax"][-1]
+                if "vmax" in storm.attrs and storm.attrs["vmax"].size > 0
+                else None,
+                "min_pressure": storm.attrs["mslp"][-1]
+                if "mslp" in storm.attrs and storm.attrs["mslp"].size > 0
+                else None,
+                "ace": storm.ace,
+                "invest": storm.invest,
+                "start_time": storm.attrs["time"][0]
+                if "time" in storm.attrs and storm.attrs["time"].size > 0
+                else None,
+                "end_time": storm.attrs["time"][-1]
+                if "time" in storm.attrs and storm.attrs["time"].size > 0
+                else None,
+                "source": storm.source_info,
+                "category": getattr(storm, "category", None),
+                "storm_type": getattr(storm, "type", None),
+            }
+        )
         print(f"   ✓ Datos extraídos correctamente")
 
     except Exception as e:
@@ -503,7 +537,7 @@ for i, storm_id in enumerate(storms_list):
 
 # Guardar JSON general
 try:
-    with open(ruta_general_datos, 'w', encoding='utf-8') as f:
+    with open(ruta_general_datos, "w", encoding="utf-8") as f:
         json.dump(datos_tormentas_general, f, indent=4, default=str, ensure_ascii=False)
     print(f"\n✅ Archivo JSON general guardado: {ruta_general_datos}")
 except Exception as e:
@@ -517,9 +551,9 @@ print("🎯 GENERANDO MAPAS Y DATOS INDIVIDUALES")
 print("=" * 60)
 
 for storm_id in storms_list:
-    print(f"\n{'='*40}")
+    print(f"\n{'=' * 40}")
     print(f"🌀 Tormenta: {storm_id}")
-    print(f"{'='*40}")
+    print(f"{'=' * 40}")
 
     try:
         storm = realtime_obj.get_storm(storm_id)
@@ -540,28 +574,40 @@ for storm_id in storms_list:
 
         # --- Datos individuales ---
         print("   💾 Guardando datos en JSON...")
-        datos_tormenta_individual = serializar({
-            "id": storm.id,
-            "name": storm.name,
-            "year": storm.year,
-            'date': datetime.now(),
-            'zona_horaria': get_localzone(),
-            "season": storm.season,
-            "basin": storm.basin,
-            "max_wind": storm.attrs["vmax"][-1] if "vmax" in storm.attrs and storm.attrs["vmax"].size > 0 else None,
-            "min_pressure": storm.attrs["mslp"][-1] if "mslp" in storm.attrs and storm.attrs["mslp"].size > 0 else None,
-            "ace": storm.ace,
-            "invest": storm.invest,
-            "start_time": storm.attrs["time"][0] if "time" in storm.attrs and storm.attrs["time"].size > 0 else None,
-            "end_time": storm.attrs["time"][-1] if "time" in storm.attrs and storm.attrs["time"].size > 0 else None,
-            "category": getattr(storm, "category", None),
-            "storm_type": getattr(storm, "type", None),
-            "source": storm.source_info
-        })
+        datos_tormenta_individual = serializar(
+            {
+                "id": storm.id,
+                "name": storm.name,
+                "year": storm.year,
+                "date": datetime.now(),
+                "zona_horaria": get_localzone(),
+                "season": storm.season,
+                "basin": storm.basin,
+                "max_wind": storm.attrs["vmax"][-1]
+                if "vmax" in storm.attrs and storm.attrs["vmax"].size > 0
+                else None,
+                "min_pressure": storm.attrs["mslp"][-1]
+                if "mslp" in storm.attrs and storm.attrs["mslp"].size > 0
+                else None,
+                "ace": storm.ace,
+                "invest": storm.invest,
+                "start_time": storm.attrs["time"][0]
+                if "time" in storm.attrs and storm.attrs["time"].size > 0
+                else None,
+                "end_time": storm.attrs["time"][-1]
+                if "time" in storm.attrs and storm.attrs["time"].size > 0
+                else None,
+                "category": getattr(storm, "category", None),
+                "storm_type": getattr(storm, "type", None),
+                "source": storm.source_info,
+            }
+        )
 
         ruta_json_individual = os.path.join(json_dir, f"tormenta_{storm_id}.json")
-        with open(ruta_json_individual, 'w', encoding='utf-8') as f:
-            json.dump(datos_tormenta_individual, f, indent=4, default=str, ensure_ascii=False)
+        with open(ruta_json_individual, "w", encoding="utf-8") as f:
+            json.dump(
+                datos_tormenta_individual, f, indent=4, default=str, ensure_ascii=False
+            )
         print(f"   ✓ JSON guardado: {ruta_json_individual}")
 
     except Exception as e:

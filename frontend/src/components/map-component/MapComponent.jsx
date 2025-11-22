@@ -5,9 +5,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 // http://localhost:8000/rainmap/realtime?grid_size=5&density=5
-// http://localhost:8000/rainmap/city
-
-const API_BASE_URL = "http://localhost:8000/rainmap";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
 
 export default function MapComponent({ selectedCity = "Ciudad de Mexico" }) {
   const mapRef = useRef(null);
@@ -20,13 +18,24 @@ export default function MapComponent({ selectedCity = "Ciudad de Mexico" }) {
     const fetchData = async () => {
       try {
         console.log("🌧️ Loading rain map data...");
-        const res = await fetch(`${API_BASE_URL}/realtime?grid_size=15&density=100`);
-        if (!res.ok) throw new Error("Error fetching data from server");
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 250000); // 2.4min timeout
+
+        const res = await fetch(`${API_BASE_URL}/rainmap/realtime?grid_size=15&density=100`, {
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         console.log("✅ Data received:", data);
         setPrecipData(data);
       } catch (err) {
         console.error("❌ Error loading data:", err);
+        if (err.name === 'AbortError') {
+          console.error('Request timed out');
+        }
       } finally {
         setLoading(false);
       }
@@ -38,7 +47,7 @@ export default function MapComponent({ selectedCity = "Ciudad de Mexico" }) {
   useEffect(() => {
     const fetchCity = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/city?selectedCity=${selectedCity.name}`);
+        const res = await fetch(`${API_BASE_URL}/rainmap/city?selectedCity=${selectedCity.name}`);
         if (!res.ok) throw new Error("Error fetching city data");
         const data = await res.json();
         console.log("📍 City data received:", data);
