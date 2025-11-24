@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
 import { MapPin, Wind, AlertTriangle, Loader, ChevronLeft, ChevronRight } from "lucide-react"
 
-// const API_BASE_URL = "http://localhost:8000"
+const API_BASE_URL = "https://weatherstorm-app-backend-weather-app.up.railway.app"
 // https://weatherstorm-app-backend-weather-app.up.railway.app/api/date/20251027/storms/0
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "https://weatherstorm-app-backend-weather-app.up.railway.app" || "http://localhost:8000";
 
 // Popup para mostrar JSON
 function InfoPopup({ isOpen, onClose, title, content, isLoading, error }) {

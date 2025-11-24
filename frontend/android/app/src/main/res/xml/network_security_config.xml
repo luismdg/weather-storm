@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain>api.maptiler.com</domain>
+        <domain>*.maptiler.com</domain>
+        <domain>weatherstorm-app-backend-weather-app.up.railway.app</domain>
+        <domain>*.railway.app</domain>
+    </domain-config>
+</network-security-config>
